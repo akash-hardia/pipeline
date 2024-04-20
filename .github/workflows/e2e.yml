@@ -1,14 +1,14 @@
-name: e2e
-on:
-  workflow_dispatch:        # run manually for development env
-  workflow_call:            # auto run on deployment to stage
+# name: e2e
+# on:
+#   workflow_dispatch:        # run manually for development env
+#   workflow_call:            # auto run on deployment to stage
 
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Run e2e
-        run: echo "Running e2e"
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+#       - name: Run e2e
+#         run: echo "Running e2e"
