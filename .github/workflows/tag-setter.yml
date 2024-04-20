@@ -28,6 +28,8 @@ jobs:
           value: ${{ github.event.after }}
       - name: Auto deploy to development
         uses: ./deploy.yml
+        with:
+          envrironment: development
 
   stage:
     if: github.event.ref == 'release'
