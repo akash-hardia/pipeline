@@ -1,21 +1,21 @@
-name: Automerge to Main Branch
+# name: Automerge to Main Branch
 
-on:
-  pull_request:
-    types:
-      - closed
+# on:
+#   pull_request:
+#     types:
+#       - closed
 
-jobs:
-  automerge:
-    runs-on: ubuntu-latest
+# jobs:
+#   automerge:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Merge release branch into main
-        run: |
-          git fetch origin
-          git checkout main
-          git merge --no-ff ${{ github.event.pull_request.head.ref }} -m "Automerge: Merge ${{ github.event.pull_request.head.ref }} into main"
-          git push origin main
+#       - name: Merge release branch into main
+#         run: |
+#           git fetch origin
+#           git checkout main
+#           git merge --no-ff ${{ github.event.pull_request.head.ref }} -m "Automerge: Merge ${{ github.event.pull_request.head.ref }} into main"
+#           git push origin main
