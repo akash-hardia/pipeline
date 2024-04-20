@@ -27,7 +27,7 @@ jobs:
           name: DEV_IMAGE_TAG
           value: ${{ github.sha }}
       - name: Auto deploy to development
-        uses: ./deploy.yml
+        uses: ./.github/workflows/deploy.yml
         with:
           envrironment: development
 
