@@ -26,10 +26,6 @@ jobs:
           repository: ${{ github.repository }}
           name: DEV_IMAGE_TAG
           value: ${{ github.sha }}
-      - name: Auto deploy to development
-        uses: ./.github/workflows/deploy.yml
-        with:
-          envrironment: development
 
   # stage:
   #   if: github.event.ref == 'release'
@@ -58,3 +54,9 @@ jobs:
   #         repository: ${{ github.repository }}
   #         name: PROD_IMAGE_TAG
   #         value: ${{ env.IMAGE_TAG }}
+
+  deploy_development:
+    needs: [dev]
+    uses: ./.github/workflows/deploy.yml
+    with:
+      envrironment: development
