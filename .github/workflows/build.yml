@@ -16,6 +16,6 @@ jobs:
 
       - name: Build image
         run: |
-          Build the image
+          echo "Build the image"
       - name: Set image tag
         uses: ./tag-setter.yml
