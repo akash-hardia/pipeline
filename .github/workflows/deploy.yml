@@ -1,18 +1,49 @@
 name: deploy
 on:
-  workflow_dispatch:
   workflow_call:
-  pull_request:
-    branches:
-      - 'main'
+    inputs:
+      environment:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - isd-development
+          - development
+          - production
   push:
     branches:
       - develop
-
+      - release
 
 jobs:
-  build:
+  deploy-dev:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+      - name: Deploy development
+        if: github.ref == 'refs/heads/develop'
+        run: echo "deployed on development"
+  deploy-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy staging
+        if: github.ref == 'refs/heads/release'
+        run: echo "deployed on staging"
+  deploy-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Prod
+        if: github.ref == 'refs/heads/main'
+        run: echo "deployed on staging"
+
+
+  e2e:                              # run e2e on successfull stage deployment
+    needs: [deploy-stage]
+    if: jobs.deploy-stage.success == 'true'
+    uses: ./.github/workflows/e2e.yml

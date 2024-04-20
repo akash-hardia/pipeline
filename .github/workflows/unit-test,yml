@@ -1,0 +1,21 @@
+name: Unit Test Workflow
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types:
+      - opened
+
+jobs:
+  unit-tests:
+    if: "${{ github.head_ref }}" == fix-* || "${{ github.head_ref }}" == feat-*
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run unit tests
+        run: |
+          echo "Testing code"
