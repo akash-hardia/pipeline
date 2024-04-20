@@ -1,16 +1,16 @@
 name: tag-seter
 on:
-  workflow_dispatch:
   workflow_call:
-  pull_request:
-    branches:
-      - 'main'
-    types:
-      - 'closed'
-  push:
-    branches:
-      - release
-      - main
+  # workflow_dispatch:
+  # pull_request:
+  #   branches:
+  #     - 'main'
+  #   types:
+  #     - 'closed'
+  # push:
+  #   branches:
+  #     - release
+  #     - main
 
 jobs:
   dev:
@@ -25,36 +25,36 @@ jobs:
           token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
           repository: ${{ github.repository }}
           name: DEV_IMAGE_TAG
-          value: ${{ github.event.after }}
+          value: ${{ github.sha }}
       - name: Auto deploy to development
         uses: ./deploy.yml
         with:
           envrironment: development
 
-  stage:
-    if: github.event.ref == 'release'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: update Image Tag ENV value
-        uses: mmoyaferrer/set-github-variable@v1.0.0
-        with:
-          token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
-          repository: ${{ github.repository }}
-          name: STAGE_IMAGE_TAG
-          value: ${{ env.IMAGE_TAG }}
+  # stage:
+  #   if: github.event.ref == 'release'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: update Image Tag ENV value
+  #       uses: mmoyaferrer/set-github-variable@v1.0.0
+  #       with:
+  #         token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
+  #         repository: ${{ github.repository }}
+  #         name: STAGE_IMAGE_TAG
+  #         value: ${{ env.IMAGE_TAG }}
 
-  production:
-    if: github.event.ref == 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: update Image Tag ENV value
-        uses: mmoyaferrer/set-github-variable@v1.0.0
-        with:
-          token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
-          repository: ${{ github.repository }}
-          name: PROD_IMAGE_TAG
-          value: ${{ env.IMAGE_TAG }}
+  # production:
+  #   if: github.event.ref == 'main'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: update Image Tag ENV value
+  #       uses: mmoyaferrer/set-github-variable@v1.0.0
+  #       with:
+  #         token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
+  #         repository: ${{ github.repository }}
+  #         name: PROD_IMAGE_TAG
+  #         value: ${{ env.IMAGE_TAG }}
