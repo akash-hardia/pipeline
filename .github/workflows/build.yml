@@ -21,5 +21,4 @@ jobs:
     needs: [build]
     if: github.head_ref == 'develop'
     uses:  ./.github/workflows/tag-setter.yml
-    with:
-      environment: development
+
