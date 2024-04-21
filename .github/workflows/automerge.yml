@@ -13,6 +13,7 @@ jobs:
 
       - name: Merge release branch into main
         run: |
+          git --version
           git config --global user.email "you@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin
