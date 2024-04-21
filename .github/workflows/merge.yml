@@ -19,7 +19,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Check if merge is needed
+        id: check-merge
+        run: |
+          git fetch origin
+          if [ "$(git rev-parse ${{ github.ref_name }})" != "$(git rev-parse ${{ inputs.to-branch }})" ]; then
+            echo "::set-output name=merge_needed::true"
+          else
+            echo "::set-output name=merge_needed::false"
+          fi
+
       - name: Manually merge a branch
+        if: steps.check-merge.outputs.merge_needed == 'true'
+        id: perform-merge
         run: |
           git fetch origin
           git checkout ${{ inputs.to-branch }}
