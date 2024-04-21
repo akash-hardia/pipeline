@@ -40,5 +40,5 @@ jobs:
           echo "Merging ${{github.ref_name}} into ${{ inputs.to-branch }}"
           git config --global user.email "you@example.com"
           git config --global user.name "Automerger"
-          git merge ${{ github.ref_name }}
+          git merge ${{ github.ref_name }} --allow-unrelated-histories
           git push origin ${{ inputs.to-branch }}
