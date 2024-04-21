@@ -29,7 +29,10 @@ jobs:
           git checkout main
           git pull origin main
 
-          git merge --squash release -m "Automerge: Merge release into main" --allow-unrelated-histories -s recursive
+          git status
+          git config --list
+
+          git merge --squash release -m "Automerge: Merge release into main" --allow-unrelated-histories -s recursive --verbose
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
