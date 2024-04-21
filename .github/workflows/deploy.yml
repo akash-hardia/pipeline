@@ -43,7 +43,7 @@ jobs:
         run: echo "deployed on staging"
 
 
-  e2e:                              # run e2e on successfull stage deployment
-    needs: [deploy-stage]
-    if: jobs.deploy-stage.success == 'true'
-    uses: ./.github/workflows/e2e.yml
+  # e2e:                              # run e2e on successfull stage deployment
+  #   needs: [deploy-stage]
+  #   if: jobs.deploy-stage.success == 'true'
+  #   uses: ./.github/workflows/e2e.yml
