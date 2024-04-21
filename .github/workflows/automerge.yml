@@ -7,7 +7,7 @@ on:
 jobs:
   automerge:
     runs-on: ubuntu-20.04
-
+    permissions: write-all
     steps:
       - name: Set up Git
         uses: actions/setup-node@v2
@@ -31,7 +31,7 @@ jobs:
           git status
           git config --list
 
-          git merge --squash release -m "Automerge: Merge release into main" --allow-unrelated-histories -s ours --verbose
+          git merge release -m "Automerge: Merge release into main" --allow-unrelated-histories -s ort -Xtheirs --verbose
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
