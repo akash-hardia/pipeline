@@ -16,7 +16,10 @@ jobs:
           git config --global user.email "you@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin
+          git checkout release
+          git pull origin release
           git checkout main
+          git pull origin main
           git merge --no-ff release -m "Automerge: Merge release into main" --allow-unrelated-histories
           git push origin main
         env:
