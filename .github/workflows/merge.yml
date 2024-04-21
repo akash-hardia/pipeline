@@ -35,7 +35,7 @@ jobs:
         if: steps.check-merge.outputs.merge_needed == 'true'
         id: perform-merge
         run: |
-          git fetch origin
+          git fetch origin ${{ inputs.to-branch }} ${{ github.ref_name }}
           git checkout ${{ inputs.to-branch }}
           echo "Merging ${{github.ref_name}} into ${{ inputs.to-branch }}"
           git config --global user.email "you@example.com"
