@@ -19,5 +19,5 @@ jobs:
           echo "Build the image"
   set-tag:
     needs: [build]
-    if: github.head_ref == "develop"
+    if: github.head_ref == 'develop'
     uses:  ./.github/workflows/tag-setter.yml
