@@ -25,7 +25,7 @@ jobs:
           git fetch origin
           git checkout release
           git pull origin release
-          git rebase origin main
+          git rebase origin/main
           git checkout main
           git pull origin main
 
