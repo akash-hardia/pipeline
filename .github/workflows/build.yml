@@ -22,8 +22,8 @@ jobs:
     steps:
       - name: echo
         run: |
-          echo ${{ github.head_ref }}
+          echo ${{ github.ref }}
   set-tag:
     needs: [build]
-    if: github.head_ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop'
     uses:  ./.github/workflows/tag-setter.yml
