@@ -22,25 +22,25 @@ on:
 
 jobs:
   deploy-dev:
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy development
-        if: github.ref == 'refs/heads/develop'
         run: echo "deployed on development"
-  deploy-stage:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy staging
-        if: github.ref == 'refs/heads/release'
-        run: echo "deployed on staging"
-  deploy-prod:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy Prod
-        if: github.ref == 'refs/heads/main'
-        run: echo "deployed on staging"
+  # deploy-stage:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy staging
+  #       if: github.ref == 'refs/heads/release'
+  #       run: echo "deployed on staging"
+  # deploy-prod:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy Prod
+  #       if: github.ref == 'refs/heads/main'
+  #       run: echo "deployed on staging"
 
 
   # e2e:                              # run e2e on successfull stage deployment
