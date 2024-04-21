@@ -24,3 +24,5 @@ jobs:
           git checkout ${{ inputs.to-branch }}
           git merge origin/${{ github.ref_name }} --no-ff --no-edit
           git push origin ${{ inputs.to-branch }}
+        env: 
+          GH_TOKEN: secrets.GITHUB_TOKEN
