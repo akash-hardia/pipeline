@@ -3,7 +3,7 @@ name: Manual Merge
 on:
   workflow_dispatch:
     inputs:
-      branch:
+      to-branch:
         description: 'Merge to?'
         required: true
         default: 'release'
@@ -18,9 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Merge develop into release
+      - name: Manually merge a branch
         run: |
           git fetch origin
-          git checkout release
-          git merge origin/develop --no-ff --no-edit
-          git push origin release
+          git checkout ${{ inputs.to-branch }}
+          git merge origin/${{ github.ref_name }} --no-ff --no-edit
+          git push origin ${{ inputs.to-branch }}
