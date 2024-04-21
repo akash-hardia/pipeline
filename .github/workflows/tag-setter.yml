@@ -59,4 +59,4 @@ jobs:
     needs: [dev]
     uses: ./.github/workflows/deploy.yml
     with:
-      envrironment: development
+      environment: development
