@@ -31,7 +31,7 @@ jobs:
           git status
           git config --list
 
-          git merge --squash release -m "Automerge: Merge release into main" --allow-unrelated-histories -s resolve --verbose
+          git merge --squash release -m "Automerge: Merge release into main" --allow-unrelated-histories -s ort --verbose
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
