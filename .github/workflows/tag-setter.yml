@@ -14,7 +14,7 @@ on:
 
 jobs:
   dev:
-    if: github.event.ref == 'develop'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
