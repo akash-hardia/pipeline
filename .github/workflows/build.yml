@@ -19,9 +19,9 @@ jobs:
           echo "Build the image"
   print:
     steps:
-      name: echo
-      run: |
-        echo ${{ github.head_ref }}
+      - name: echo
+        run: |
+          echo ${{ github.head_ref }}
   set-tag:
     needs: [build]
     if: github.head_ref == 'refs/heads/develop'
