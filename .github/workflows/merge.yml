@@ -12,7 +12,8 @@ on:
         - release
 
 jobs:
-  unit_tests:
+  merge:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
