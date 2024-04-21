@@ -25,6 +25,8 @@ jobs:
         id: check-merge
         run: |
           git fetch origin
+          echo "git rev-parse ${{ inputs.to-branch }}"
+          git rev-parse ${{ inputs.to-branch }}
           if [ "$(git rev-parse ${{ github.ref_name }})" != "$(git rev-parse ${{ inputs.to-branch }})" ]; then
             echo "::set-output name=merge_needed::true"
           else
