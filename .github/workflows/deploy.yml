@@ -45,7 +45,7 @@ jobs:
 
   e2e:                              # run e2e on successfull stage deployment
     needs: [deploy-stage]
-    if: jobs.deploy-stage.success == 'true'
+    if: needs.deploy-stage.result == 'success'
     uses: ./.github/workflows/e2e.yml
     with:
       stage_deployment_success: true
