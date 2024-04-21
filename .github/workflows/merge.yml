@@ -1,0 +1,18 @@
+name: Manual Merge
+
+on:
+  workflow_dispatch:
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Merge develop into release
+        run: |
+          git fetch origin
+          git checkout release
+          git merge origin/develop --no-ff --no-edit
+          git push origin release
