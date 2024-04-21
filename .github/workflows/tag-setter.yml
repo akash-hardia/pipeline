@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        run: |
+      - run: |
           gh variable list
           gh variable set DEV_IMAGE_TAG --body ${{ github.sha }}
           gh variable list
