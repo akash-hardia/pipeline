@@ -17,15 +17,18 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - run: |
+        gh variable list
+        gh variable set DEV_IMAGE_TAG --body ${{ github.sha }}
+        gh variable list
+      env:
+        GITHUB_TOKEN: ${{ secrets.FULL_PAT }}
+
       - name: update Image Tag ENV value
-        uses: mmoyaferrer/set-github-variable@v1.0.0
-        with:
-          token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
-          repository: ${{ github.repository }}
-          name: DEV_IMAGE_TAG
-          value: ${{ github.sha }}
+        run: |
+          echo "Setting gh variable"
+          echo "Setting DEV_IMAGE_TAG as ${{ github.sha }}"
 
   # stage:
   #   if: github.event.ref == 'release'
