@@ -2,6 +2,14 @@ name: Manual Merge
 
 on:
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Merge to?'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+        - release
 
 jobs:
   unit_tests:
