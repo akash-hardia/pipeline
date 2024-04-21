@@ -20,5 +20,5 @@ jobs:
 
   automerge-to-main:
     needs: [e2e]
-    if: inputs.stage_deployment_success == true && jobs.e2e.status == 'true'
+    if: inputs.stage_deployment_success == true && needs.e2e.result == 'success'
     uses: ./.github/workflows/automerge.yml
