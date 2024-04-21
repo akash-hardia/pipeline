@@ -3,9 +3,9 @@ on:
   workflow_dispatch:        # run manually for development env (optional)
   # workflow_call:            # auto run on deployment to stage
 
-
 jobs:
-  build:
+  e2e:
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
