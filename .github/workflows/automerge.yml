@@ -2,6 +2,7 @@ name: Automerge to Main Branch
 
 on:
   workflow_call:
+  workflow_dispatch:  # remove this (for testing)
 
 jobs:
   automerge:
@@ -21,7 +22,7 @@ jobs:
           git pull origin release
           git checkout main
           git pull origin main
-          git merge --no-ff release -m "Automerge: Merge release into main" --allow-unrelated-histories
+          git merge --squash release -m "Automerge: Merge release into main"
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
