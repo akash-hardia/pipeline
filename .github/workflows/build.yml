@@ -17,5 +17,7 @@ jobs:
       - name: Build image
         run: |
           echo "Build the image"
-      - name: Set image tag
-        uses: ./.github/workflows/tag-setter.yml
+  set-tag:
+    needs: [build]
+    if: github.head_ref == "develop"
+    uses:  ./.github/workflows/tag-setter.yml
