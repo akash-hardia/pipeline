@@ -7,10 +7,10 @@ on:
   #     - 'main'
   #   types:
   #     - 'closed'
-  # push:
-  #   branches:
-  #     - release
-  #     - main
+  push:
+    branches:
+      - release
+      # - main
 
 jobs:
   dev:
@@ -30,19 +30,23 @@ jobs:
           echo "Setting gh variable"
           echo "Setting DEV_IMAGE_TAG as ${{ github.sha }}"
 
-  # stage:
-  #   if: github.event.ref == 'release'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #     - name: update Image Tag ENV value
-  #       uses: mmoyaferrer/set-github-variable@v1.0.0
-  #       with:
-  #         token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
-  #         repository: ${{ github.repository }}
-  #         name: STAGE_IMAGE_TAG
-  #         value: ${{ env.IMAGE_TAG }}
+  stage:
+    if: github.event.ref == 'refs/heads/release'
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Checkout code
+      #   uses: actions/checkout@v4
+      # - name: update Image Tag ENV value
+      #   uses: mmoyaferrer/set-github-variable@v1.0.0
+      #   with:
+      #     token: ${{ secrets.GH_TOKEN_SEPHORA_BOT }}
+      #     repository: ${{ github.repository }}
+      #     name: STAGE_IMAGE_TAG
+      #     value: ${{ env.IMAGE_TAG }}
+      - name: update Image Tag ENV value
+        run: |
+          echo "Setting gh variable"
+          echo "Setting STAGE_IMAGE_TAG as ${{ github.sha }}"
 
   # production:
   #   if: github.event.ref == 'main'
@@ -60,6 +64,14 @@ jobs:
 
   deploy_development:
     needs: [dev]
+    if: jobs.dev.success == 'true'
     uses: ./.github/workflows/deploy.yml
     with:
       environment: development
+
+  deploy_staging:               # once the tag is set, auto using set tag.
+    needs: [stage]
+    if: jobs.stage.success == 'true'
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: staging
