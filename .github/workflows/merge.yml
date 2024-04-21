@@ -38,5 +38,5 @@ jobs:
           git fetch origin
           git checkout ${{ inputs.to-branch }}
           echo "Merging ${{github.ref_name}} into ${{ inputs.to-branch }}"
-          git merge origin/${{ github.ref_name }} --no-edit --stat
+          git merge origin/${{ github.ref_name }} --no-edit --stat --allow-unrelated-histories
           git push origin ${{ inputs.to-branch }}
