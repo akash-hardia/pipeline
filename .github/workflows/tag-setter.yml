@@ -64,14 +64,14 @@ jobs:
 
   deploy_development:
     needs: [dev]
-    if: jobs.dev.success == 'true'
+    if: needs.dev.result == 'success'
     uses: ./.github/workflows/deploy.yml
     with:
       environment: development
 
   deploy_staging:               # once the tag is set, auto using set tag.
     needs: [stage]
-    if: jobs.stage.success == 'true'
+    if: needs.stage.result == 'success'
     uses: ./.github/workflows/deploy.yml
     with:
       environment: staging
