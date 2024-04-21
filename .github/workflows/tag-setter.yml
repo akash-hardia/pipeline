@@ -22,8 +22,8 @@ jobs:
           gh variable list
           gh variable set DEV_IMAGE_TAG --body ${{ github.sha }}
           gh variable list
-      env:
-        GITHUB_TOKEN: ${{ secrets.FULL_PAT }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.FULL_PAT }}
 
       - name: update Image Tag ENV value
         run: |
