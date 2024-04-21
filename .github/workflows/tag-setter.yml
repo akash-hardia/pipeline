@@ -18,12 +18,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
+        run: |
           gh variable list
           gh variable set DEV_IMAGE_TAG --body ${{ github.sha }}
           gh variable list
         env:
-          GITHUB_TOKEN: ${{ secrets.FULL_PAT }}
+          GH_TOKEN: ${{ secrets.FULL_PAT }}
 
       - name: update Image Tag ENV value
         run: |
