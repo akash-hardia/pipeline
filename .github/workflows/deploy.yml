@@ -42,7 +42,10 @@ jobs:
     if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
     steps:
       - name: Deploy Prod
-        run: echo "deployed on production"
+        run: |
+          echo "github.actor: ${{ github.actor }}"
+          echo "github.actor.role: ${{ github.actor.role }}"
+          echo "deployed on production"
 
   e2e:                              # run e2e on successfull stage deployment
     needs: [deploy-stage]
