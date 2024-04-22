@@ -39,7 +39,7 @@ jobs:
         run: echo "deployed on staging"
   deploy-prod:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
+    if: github.ref == 'refs/heads/main' && inputs.environment == 'production' && github.actor == 'akashhardia'
     steps:
       - name: Deploy Prod
         run: |
