@@ -12,6 +12,9 @@ on:
       - release
       # - main
 
+permissions:
+  content: write
+
 jobs:
   dev:
     if: github.ref == 'refs/heads/develop'
