@@ -31,15 +31,15 @@ jobs:
         run: echo "deployed on development"
   deploy-stage:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release'
     steps:
       - name: Deploy staging
-        if: github.ref == 'refs/heads/release'
         run: echo "deployed on staging"
   deploy-prod:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
     steps:
       - name: Deploy Prod
-        if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
         run: echo "deployed on production"
 
   e2e:                              # run e2e on successfull stage deployment
