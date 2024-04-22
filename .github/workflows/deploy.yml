@@ -53,3 +53,8 @@ jobs:
     uses: ./.github/workflows/e2e.yml
     with:
       stage_deployment_success: true
+
+  release:
+    needs: [deploy-prod]
+    if: needs.deploy-prod.result == 'success'
+    uses: ./.github/workflows/release.yml
