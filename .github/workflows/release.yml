@@ -33,4 +33,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-        echo "Made a release.."
+          echo "Made a release.."
