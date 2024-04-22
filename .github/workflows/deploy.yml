@@ -5,16 +5,16 @@ on:
       environment:
         required: true
         type: string
-  # workflow_dispatch:
-  #   inputs:
-  #     environment:
-  #       description: 'Environment to deploy to'
-  #       required: true
-  #       type: choice
-  #       options:
-  #         - isd-development
-  #         - development
-  #         - production
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - production
+          # - isd-development
+          # - development
   # push:
   #   branches:
   #     - develop
@@ -35,13 +35,12 @@ jobs:
       - name: Deploy staging
         if: github.ref == 'refs/heads/release'
         run: echo "deployed on staging"
-  # deploy-prod:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy Prod
-  #       if: github.ref == 'refs/heads/main'
-  #       run: echo "deployed on staging"
-
+  deploy-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy Prod
+        if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
+        run: echo "deployed on production"
 
   e2e:                              # run e2e on successfull stage deployment
     needs: [deploy-stage]
