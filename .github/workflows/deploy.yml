@@ -13,16 +13,20 @@ on:
         type: choice
         options:
           - production
-          # - isd-development
-          # - development
-  # push:
-  #   branches:
-  #     - develop
-  #     - release
+          - isd-development
+
 permissions:
   contents: write
 
 jobs:
+  deploy-other:
+    if: inputs.environment == 'isd-development' && contains(github.ref, 'fix-') || contains(github.ref, 'feat-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Deploy development
+        run: echo "deployed on other env"
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
