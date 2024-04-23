@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   dev:
-    if: github.ref == 'refs/heads/develop'
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
           echo "Setting STAGE_IMAGE_TAG as ${{ github.sha }}"
 
   production:
-    if: github.event.ref == 'refs/heads/main'
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       # - name: Checkout code
