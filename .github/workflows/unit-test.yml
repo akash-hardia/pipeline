@@ -6,11 +6,10 @@ on:
       - opened
     branches:
       - 'develop'
-      - 'main'
 
 jobs:
   unit_tests:
-    if: startsWith(github.head_ref, 'fix-') || startsWith(github.head_ref, 'feat-') || startsWith(github.head_ref, 'hotfix-')
+    if: startsWith(github.head_ref, 'fix-') || startsWith(github.head_ref, 'feat-')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

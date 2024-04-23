@@ -13,20 +13,16 @@ on:
         type: choice
         options:
           - production
-          - isd-development
-
+          # - isd-development
+          # - development
+  # push:
+  #   branches:
+  #     - develop
+  #     - release
 permissions:
   contents: write
 
 jobs:
-  deploy-other:
-    if: inputs.environment == 'isd-development' && contains(github.ref, 'fix-') || contains(github.ref, 'feat-')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Deploy development
-        run: echo "deployed on other env"
   deploy-dev:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
@@ -43,13 +39,10 @@ jobs:
         run: echo "deployed on staging"
   deploy-prod:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && inputs.environment == 'production' && github.actor == 'akashhardia'
+    if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
     steps:
       - name: Deploy Prod
-        run: |
-          echo "github.actor: ${{ github.actor }}"
-          echo "github.actor.role: ${{ github.actor.role }}"
-          echo "deployed on production"
+        run: echo "deployed on production"
 
   e2e:                              # run e2e on successfull stage deployment
     needs: [deploy-stage]
@@ -57,8 +50,3 @@ jobs:
     uses: ./.github/workflows/e2e.yml
     with:
       stage_deployment_success: true
-
-  release:
-    needs: [deploy-prod]
-    if: needs.deploy-prod.result == 'success'
-    uses: ./.github/workflows/release.yml
