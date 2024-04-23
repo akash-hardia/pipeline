@@ -1,16 +1,12 @@
 name: tag-seter
 on:
-  workflow_call:
-  # workflow_dispatch:
-  # pull_request:
-  #   branches:
-  #     - 'main'
-  #   types:
-  #     - 'closed'
-  push:
+  workflow_run:       # run when build is success for develop & hotfix case
+    workflows: [app-build]
+    types: [completed]
+    branches: [main, develop]
+  push:               # runs when pushed to release
     branches:
       - release
-      - main
 
 permissions:
   contents: write
