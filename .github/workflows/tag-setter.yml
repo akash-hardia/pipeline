@@ -3,7 +3,7 @@ on:
   workflow_run:       # run when build is success for develop & hotfix case
     workflows: [app-build]
     types: [completed]
-    branches: [main, develop]
+    branches: ['refs/heads/main', 'refs/heads/develop']
   push:               # runs when pushed to release
     branches:
       - release
