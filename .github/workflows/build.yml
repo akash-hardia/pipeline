@@ -9,6 +9,10 @@ on:
   push:             # push to develop branch
     branches:
       - develop
+
+permissions:
+  contents: write
+
 jobs:
   build:
     permissions: write-all
@@ -30,7 +34,7 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
-          event-type: set-for-develop
+          # event-type: set-for-develop
           token: ${{ secrets.FULL_PAT }}
           client-payload: '{"ref": "refs/heads/develop", "sha": "${{ github.sha }}"}'
 
