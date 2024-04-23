@@ -64,6 +64,7 @@ jobs:
         run: |
           echo "Setting gh variable"
           echo "Setting PROD_IMAGE_TAG as ${{ github.sha }}"
+          echo "github.ref as ${{ github.ref }}"
 
   deploy_development:
     needs: [dev]
