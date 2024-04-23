@@ -21,3 +21,25 @@ jobs:
       - name: Build image
         run: |
           echo "Build the image"
+
+  set-dev-tag:      # only for develop & hotfix case
+    needs: [build]
+    if: needs.build.result == 'success' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: set-for-develop
+          client-payload: '{"ref": "refs/heads/develop", "sha": "${{ github.sha }}"}'
+
+  set-hotfix-tag:      # only for develop & hotfix case
+    needs: [build]
+    if: needs.build.result == 'success' && github.event.pull_request.merged == true && github.base_ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          event-type: set-for-hotfix
+          client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
