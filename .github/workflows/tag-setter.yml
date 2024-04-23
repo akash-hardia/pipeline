@@ -21,13 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # - name: gh
-      #   run: |
-      #     gh variable list
-      #     gh variable set DEV_IMAGE_TAG --body ${{ github.sha }}
-      #     gh variable list
-      #   env:
-      #     GH_TOKEN: ${{ secrets.FULL_PAT }}
+      - name: gh
+        run: |
+          gh variable list
+          gh variable set DEV_IMAGE_TAG --body ${{ github.sha }}
+          gh variable list
+        env:
+          GH_TOKEN: ${{ secrets.FULL_PAT }}
       - name: update Image Tag ENV value
         run: |
           echo "Setting gh variable"
@@ -52,7 +52,8 @@ jobs:
           echo "Setting STAGE_IMAGE_TAG as ${{ github.sha }}"
 
   production:
-    if: github.event.ref == 'refs/heads/main'
+    # push to main / hotfix is merged into main
+    if: github.event.ref == 'refs/heads/main' || github.event.pull_request.merged == true && github.base_ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       # - name: Checkout code
