@@ -1,19 +1,21 @@
 name: tag-seter
 on:
-  workflow_run:       # run when build is success for develop & hotfix case
-    workflows: [app-build]
-    types: [completed]
-    branches: ['refs/heads/main', 'refs/heads/develop']
+  # workflow_run:       # run when build is success for develop & hotfix case
+  #   workflows: [app-build]
+  #   types: [completed]
+  #   branches: ['refs/heads/main', 'refs/heads/develop']
   push:               # runs when pushed to release
     branches:
       - release
+  repository_dispatch:
+    types: [set-for-hotfix, set-for-develop]
 
 permissions:
   contents: write
 
 jobs:
   dev:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.client_payload.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +29,7 @@ jobs:
       - name: update Image Tag ENV value
         run: |
           echo "Setting gh variable"
-          echo "Setting DEV_IMAGE_TAG as ${{ github.sha }}"
+          echo "Setting DEV_IMAGE_TAG as ${{ github.event.client_payload.sha }}"
 
   stage:
     if: github.event.ref == 'refs/heads/release'
@@ -48,7 +50,7 @@ jobs:
           echo "Setting STAGE_IMAGE_TAG as ${{ github.sha }}"
 
   production:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.client_payload.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       # - name: Checkout code
@@ -63,8 +65,7 @@ jobs:
       - name: update Image Tag ENV value
         run: |
           echo "Setting gh variable"
-          echo "Setting PROD_IMAGE_TAG as ${{ github.sha }}"
-          echo "github.ref as ${{ github.ref }}"
+          echo "Setting PROD_IMAGE_TAG as ${{ github.event.client_payload.sha }}"
 
   deploy_development:
     needs: [dev]
