@@ -87,11 +87,8 @@ on:
         options:
           - production
           - isd-development
-          # - development
-  # push:
-  #   branches:
-  #     - develop
-  #     - release
+          - pi-development
+
 permissions:
   contents: write
 
