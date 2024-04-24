@@ -1,20 +1,16 @@
 name: tag-seter
 on:
-  # workflow_run:       # run when build is success for develop & hotfix case
-  #   workflows: [app-build]
-  #   types: [completed]
-  #   branches: ['refs/heads/main', 'refs/heads/develop']
   push:               # runs when pushed to release
     branches:
       - release
-  repository_dispatch:
+  repository_dispatch:        # auto-merge case - main & develop
     types: [set-prod-tag, set-dev-tag]
 
 permissions:
   contents: write
 
 jobs:
-  dev:
+  dev-image-tag:
     if: ${{ github.event.client_payload.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
     steps:
@@ -27,7 +23,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
-  stage:
+  stage-image-tag:
     if: github.event.ref == 'refs/heads/release'
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +37,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
-  production:
+  production-image-tag:
     if: ${{ github.event.client_payload.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
@@ -54,15 +50,15 @@ jobs:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
   deploy_development:
-    needs: [dev]
-    if: needs.dev.result == 'success'
+    needs: [dev-image-tag]
+    if: needs.dev-image-tag.result == 'success'
     uses: ./.github/workflows/deploy.yml
     with:
       environment: development
 
   deploy_staging:               # once the tag is set, auto deploy using set tag.
-    needs: [stage]
-    if: needs.stage.result == 'success'
+    needs: [stage-image-tag]
+    if: needs.stage-image-tag.result == 'success'
     uses: ./.github/workflows/deploy.yml
     with:
       environment: staging
