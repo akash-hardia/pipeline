@@ -44,6 +44,13 @@ jobs:
           repository: ${{ github.repository }}
           name: STAGE_IMAGE_TAG
           value: 'a value'
+      - name: gh
+        run: |
+          gh variable list
+          gh variable set STAGE_IMAGE_TAG --body ${{ github.sha }}
+          gh variable list
+        env:
+          GH_TOKEN: ${{ secrets.FULL_PAT }}
       - name: update Image Tag ENV value echo
         run: |
           echo "Setting gh variable"
