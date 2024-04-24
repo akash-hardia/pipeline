@@ -14,11 +14,8 @@ on:
         options:
           - production
           - isd-development
-          # - development
-  # push:
-  #   branches:
-  #     - develop
-  #     - release
+          - pi-development
+
 permissions:
   contents: write
 
@@ -30,19 +27,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy development
-        run: echo "deployed on development"
-  deploy-stage:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release'
-    steps:
-      - name: Deploy staging
-        run: echo "deployed on staging"
-  deploy-prod:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
-    steps:
-      - name: Deploy Prod
-        run: echo "deployed on production"
+        run: |
+          echo "Deploying on ${{ needs.determine-environment.outputs.selected-env }}"
+          echo "Deploying commit: ${{ vars.IMAGE_TAG }}"
 
   e2e:                              # run e2e on successfull stage deployment
     needs: [deploy-stage]
