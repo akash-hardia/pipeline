@@ -40,7 +40,7 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
-          event-type: set-for-develop
+          event-type: set-dev-tag
           token: ${{ secrets.FULL_PAT }}
           client-payload: '{"ref": "refs/heads/develop", "sha": "${{ github.sha }}"}'
 
@@ -53,5 +53,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.FULL_PAT }}
-          event-type: set-for-hotfix
+          event-type: set-prod-tag
           client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
