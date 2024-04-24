@@ -48,6 +48,7 @@ jobs:
     needs: [deploy-stage]
     if: needs.deploy-stage.result == 'success'
     uses: ./.github/workflows/e2e.yml
+    secrets: inherit
     with:
       stage_deployment_success: true
 

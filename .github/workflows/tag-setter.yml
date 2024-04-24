@@ -57,6 +57,7 @@ jobs:
     needs: [dev]
     if: needs.dev.result == 'success'
     uses: ./.github/workflows/deploy.yml
+    secrets: inherit
     with:
       environment: development
 
@@ -64,5 +65,6 @@ jobs:
     needs: [stage]
     if: needs.stage.result == 'success'
     uses: ./.github/workflows/deploy.yml
+    secrets: inherit
     with:
       environment: staging
