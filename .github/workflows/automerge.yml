@@ -20,6 +20,7 @@ jobs:
 
       - name: Merge release branch into main
         run: |
+          echo "Prining secret: ${{ secrets.PUBLIC_REPO }}"
           git --version
           git config --global user.email "you@example.com"
           git config --global user.name "Auto Merger"
