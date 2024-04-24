@@ -45,6 +45,6 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.FULL_PAT }}
+          token: ${{ secrets.PUBLIC_REPO }}
           event-type: set-prod-tag
           client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
