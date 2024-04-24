@@ -41,7 +41,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           event-type: set-dev-tag
-          token: ${{ secrets.FULL_PAT }}
+          token: ${{ secrets.PUBLIC_REPO }}
           client-payload: '{"ref": "refs/heads/develop", "sha": "${{ github.sha }}"}'
 
   set-hotfix-tag:      # only for develop & hotfix case
@@ -52,6 +52,6 @@ jobs:
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.FULL_PAT }}
+          token: ${{ secrets.PUBLIC_REPO }}
           event-type: set-prod-tag
           client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
