@@ -1,11 +1,11 @@
 name: deploy
 on:
-  workflow_call:
+  workflow_call:                # auto deploy to main-dev & staging
     inputs:
       environment:
         required: true
         type: string
-  workflow_dispatch:
+  workflow_dispatch:            # manual deploy to production / squad envs
     inputs:
       environment:
         description: 'Environment to deploy to'
@@ -22,37 +22,68 @@ on:
 permissions:
   contents: write
 
+env:
+  development: github.ref == 'refs/heads/develop' && true
+  staging:
+  production:
+
 jobs:
-  deploy-dev:
-    if: github.ref == 'refs/heads/develop'
+  determine-environment:
     runs-on: ubuntu-latest
+    steps:
+      - name: Select environment
+        id: select-environment
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            echo "main-dev (development)"
+            echo "selected-env=development" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.ref }}" == "refs/heads/release" ]; then
+            echo "staging"
+            echo "selected-env=staging" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.ref }}" == "refs/heads/main" && ${{ inputs.environment }} == "production" ]; then
+            echo "production"
+            echo "selected-env=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "Squad Environment - ${{ inputs.environment }}"
+            echo "selected-env=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
+          fi
+    outputs:
+      selected-env: ${{ steps.select-environment.outputs.selected-env }}
+
+  deploy:
+    needs: [determine-environment]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.determine-environment.outputs.selected-env }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy development
-        run: echo "deployed on development"
-  deploy-stage:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/release'
-    steps:
-      - name: Deploy staging
-        run: echo "deployed on staging"
-  deploy-prod:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
-    steps:
-      - name: Deploy Prod
-        run: echo "deployed on production"
+        run: |
+          echo "Deploying on ${{ jobs.deploy.environment }}"
+          echo "Deploying commit: ${{ env.IMAGE_TAG }}"
+  # deploy-stage:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/release'
+  #   steps:
+  #     - name: Deploy staging
+  #       run: echo "deployed on staging"
+  # deploy-prod:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main' && inputs.environment == 'production'
+  #   steps:
+  #     - name: Deploy Prod
+  #       run: echo "deployed on production"
 
   e2e:                              # run e2e on successfull stage deployment
-    needs: [deploy-stage]
-    if: needs.deploy-stage.result == 'success'
+    needs: [deploy, determine-environment]
+    if: needs.determine-environment.outputs.selected-env == 'staging' && needs.deploy.result == 'success'
     uses: ./.github/workflows/e2e.yml
     secrets: inherit
     with:
       stage_deployment_success: true
 
   release:
-    needs: [deploy-prod]
-    if: needs.deploy-prod.result == 'success'
+    needs: [deploy, determine-environment]
+    if: needs.determine-environment.outputs.selected-env == 'production' && needs.deploy.result == 'success'
     uses: ./.github/workflows/release.yml
