@@ -36,3 +36,15 @@ jobs:
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
+
+  set-image-tag:      # when release is merged in main - set prod image tag
+    needs: [automerge]
+    if: needs.automerge.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.FULL_PAT }}
+          event-type: set-for-hotfix
+          client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
