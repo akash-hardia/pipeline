@@ -17,7 +17,6 @@ jobs:
   dev:
     if: ${{ github.event.client_payload.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
-    environment: development
     steps:
       - uses: actions/checkout@v4
       - name: gh
@@ -31,7 +30,6 @@ jobs:
   stage:
     if: github.event.ref == 'refs/heads/release'
     runs-on: ubuntu-latest
-    environment: staging
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,7 +44,6 @@ jobs:
   production:
     if: ${{ github.event.client_payload.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: gh
         run: |
