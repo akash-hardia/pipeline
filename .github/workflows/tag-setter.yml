@@ -37,13 +37,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: update Image Tag ENV value
-        uses: mmoyaferrer/set-github-variable@v1.0.0
-        with:
-          token: ${{ secrets.FULL_PAT }}
-          repository: ${{ github.repository }}
-          name: STAGE_IMAGE_TAG
-          value: 'a value'
+      # - name: update Image Tag ENV value
+      #   uses: mmoyaferrer/set-github-variable@v1.0.0
+      #   with:
+      #     token: ${{ secrets.FULL_PAT }}
+      #     repository: ${{ github.repository }}
+      #     name: STAGE_IMAGE_TAG
+      #     value: 'a value'
       - name: gh
         run: |
           gh variable list
