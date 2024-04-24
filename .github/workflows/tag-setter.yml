@@ -18,7 +18,7 @@ jobs:
       - name: gh
         run: |
           gh variable list
-          gh variable set IMAGE_TAG --body ${{ github.sha }} --env development
+          gh variable set IMAGE_TAG --body ${{ github.event.client_payload.sha }} --env development
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
@@ -44,7 +44,7 @@ jobs:
       - name: gh
         run: |
           gh variable list
-          gh variable set IMAGE_TAG --body ${{ github.sha }} --env production
+          gh variable set IMAGE_TAG --body ${{ github.event.client_payload.sha }} --env production
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
