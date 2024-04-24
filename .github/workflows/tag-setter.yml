@@ -8,7 +8,7 @@ on:
     branches:
       - release
   repository_dispatch:
-    types: [set-for-hotfix, set-for-develop]
+    types: [set-prod-tag, set-dev-tag]
 
 permissions:
   contents: write
