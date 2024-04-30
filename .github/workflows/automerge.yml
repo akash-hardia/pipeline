@@ -1,8 +1,60 @@
-name: Automerge to Main Branch
+# name: Automerge to Main Branch
+
+# on:
+#   workflow_call:
+#   workflow_dispatch:  # remove this (for testing)
+
+# jobs:
+#   automerge:
+#     runs-on: ubuntu-20.04
+#     permissions:
+#       contents: write
+#     steps:
+#       - name: Set up Git
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: '14'
+#           registry-url: 'https://registry.npmjs.org'
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Merge release branch into main
+#         run: |
+#           echo "Prining secret: ${{ secrets.PUBLIC_REPO }}"
+#           git --version
+#           git config --global user.email "you@example.com"
+#           git config --global user.name "Auto Merger"
+#           git fetch origin
+#           git checkout release
+#           git pull origin release
+#           git checkout main
+#           git pull origin main
+
+#           git status
+#           git config --list
+
+#           git merge release -m "Automerge: Merge release into main" --allow-unrelated-histories -s ort -Xtheirs --verbose
+#           git push origin main
+#         env:
+#           GH_TOKEN: secrets.GITHUB_TOKEN
+
+#   set-image-tag:      # once release is merged in main, set prod image tag
+#     needs: [automerge]
+#     if: needs.automerge.result == 'success'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Repository Dispatch
+#         uses: peter-evans/repository-dispatch@v3
+#         with:
+#           token: ${{ secrets.PUBLIC_REPO }}
+#           event-type: set-prod-tag
+#           client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
+
+
+name: Automerge Develop to Main Branch
 
 on:
   workflow_call:
-  workflow_dispatch:  # remove this (for testing)
 
 jobs:
   automerge:
@@ -18,27 +70,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Merge release branch into main
+      - name: Merge develop branch into main
         run: |
           echo "Prining secret: ${{ secrets.PUBLIC_REPO }}"
           git --version
           git config --global user.email "you@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin
-          git checkout release
-          git pull origin release
+          git checkout develop
+          git pull origin develop
           git checkout main
           git pull origin main
 
           git status
           git config --list
 
-          git merge release -m "Automerge: Merge release into main" --allow-unrelated-histories -s ort -Xtheirs --verbose
+          git merge develop -m "Automerge: Merge develop into main" --allow-unrelated-histories -s ort -Xtheirs --verbose
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
 
-  set-image-tag:      # once release is merged in main, set prod image tag
+  set-image-tag:      # once develop is merged in main, set PROD-IT
     needs: [automerge]
     if: needs.automerge.result == 'success'
     runs-on: ubuntu-latest
@@ -48,4 +100,4 @@ jobs:
         with:
           token: ${{ secrets.PUBLIC_REPO }}
           event-type: set-prod-tag
-          client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
+          client-payload: '{"env": "production", "sha": "${{ github.sha }}"}'

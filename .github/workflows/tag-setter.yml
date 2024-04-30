@@ -1,21 +1,81 @@
+# name: tag-seter
+# on:
+#   push:               # runs when pushed to release
+#     branches:
+#       - release
+#   repository_dispatch:        # auto-merge case - main & develop
+#     types: [set-prod-tag, set-dev-tag]
+
+# permissions:
+#   contents: write
+
+# jobs:
+  # dev-image-tag:
+  #   if: ${{ github.event.client_payload.ref == 'refs/heads/develop' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: gh
+  #       run: |
+  #         gh variable list
+  #         gh variable set IMAGE_TAG --body ${{ github.sha }} --env development
+  #         gh variable list
+  #       env:
+  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
+
+  # stage-image-tag:
+  #   if: github.event.ref == 'refs/heads/release'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: gh
+  #       run: |
+  #         gh variable list
+  #         gh variable set IMAGE_TAG --body ${{ github.sha }} --env staging
+  #         gh variable list
+  #       env:
+  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
+
+  # production-image-tag:
+  #   if: ${{ github.event.client_payload.ref == 'refs/heads/main' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: gh
+  #       run: |
+  #         gh variable list
+  #         gh variable set IMAGE_TAG --body ${{ github.sha }} --env production
+  #         gh variable list
+  #       env:
+  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
+
+  # deploy_development:
+  #   needs: [dev-image-tag]
+  #   if: needs.dev-image-tag.result == 'success'
+  #   uses: ./.github/workflows/deploy.yml
+  #   secrets: inherit
+  #   with:
+  #     environment: development
+
+  # deploy_staging:               # once the tag is set, auto deploy using set tag.
+  #   needs: [stage-image-tag]
+  #   if: needs.stage-image-tag.result == 'success'
+  #   uses: ./.github/workflows/deploy.yml
+  #   secrets: inherit
+  #   with:
+  #     environment: staging
+
 name: tag-seter
 on:
-  # workflow_run:       # run when build is success for develop & hotfix case
-  #   workflows: [app-build]
-  #   types: [completed]
-  #   branches: ['refs/heads/main', 'refs/heads/develop']
-  push:               # runs when pushed to release
-    branches:
-      - release
   repository_dispatch:
-    types: [set-prod-tag, set-dev-tag]
+    types: [set-prod-tag, set-stage-tag, set-dev-tag]
 
 permissions:
   contents: write
 
 jobs:
-  dev:
-    if: ${{ github.event.client_payload.ref == 'refs/heads/develop' }}
+  dev-image-tag:
+    if: ${{ github.event.client_payload.env == 'development' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,12 +86,11 @@ jobs:
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
-
-  stage:
-    if: github.event.ref == 'refs/heads/release'
+  stage-image-tag:
+    if: ${{ github.event.client_payload.env == 'staging' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4             # TODO: copy dev tag in stage
       - name: gh
         run: |
           gh variable list
@@ -40,11 +99,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
-  production:
-    if: ${{ github.event.client_payload.ref == 'refs/heads/main' }}
+  prod-image-tag:
+    if: ${{ github.event.client_payload.env == 'production' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4             # TODO: copy stage tag in prod
       - name: gh
         run: |
           gh variable list
@@ -53,18 +112,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
-  deploy_development:
-    needs: [dev]
-    if: needs.dev.result == 'success'
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit
-    with:
-      environment: development
-
-  deploy_staging:               # once the tag is set, auto deploy using set tag.
-    needs: [stage]
-    if: needs.stage.result == 'success'
+  deploy_staging:               # deploy to staging using dev tag
+    needs: [dev-image-tag]
+    if: needs.dev-image-tag.result == 'success'
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       environment: staging
+
+  automerge-to-main:            # automerge develop to main, once stage-IT is set
+    needs: [stage-image-set]
+    if: needs.stage-image-set.result == 'success'
+    uses: ./.github/workflows/automerge.yml
+    secrets: inherit
