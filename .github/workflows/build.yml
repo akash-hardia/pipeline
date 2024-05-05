@@ -56,34 +56,29 @@
 #           event-type: set-prod-tag
 #           client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
 
-
-
 name: app-build
 on:
   workflow_dispatch:
-  pull_request:     # when hotfix PR is merged in main
+  pull_request:     # when PR is opened against main
     branches:
       - 'main'
-    types:
-      - closed
   push:             # push to develop branch
     branches:
       - develop
 
 jobs:
-  print-stuff:
-    runs-on: ubuntu-latest
-    steps:
-      - name: print
-        run: |
-          echo "Printing"
-          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
-          echo "github.base_ref: ${{ github.base_ref }}"
-          echo "github.ref: ${{ github.ref }}"
+  # print-stuff:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: print
+  #       run: |
+  #         echo "Printing"
+  #         echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
+  #         echo "github.base_ref: ${{ github.base_ref }}"
+  #         echo "github.ref: ${{ github.ref }}"
   build:
     permissions: write-all
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' || github.event.pull_request.merged == true && github.base_ref == 'main' || contains(github.ref, 'fix-') || contains(github.ref, 'feat-')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -91,18 +86,19 @@ jobs:
       - name: Build image
         run: |
           echo "Build the image"
+          echo "Successfully built the image!"
 
   deploy_development:
     needs: [build]
-    if: needs.build.result == 'success'
+    if: needs.build.result == 'success' && github.ref == 'refs/heads/develop'
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
       environment: development
 
-  set-hotfix-tag:      # once hotfix branch is merged, set PROD-IT
+  set-hotfix-tag:      # when PR is opened from hotfix-* against main
     needs: [build]
-    if: needs.build.result == 'success' && github.event.pull_request.merged == true && github.base_ref == 'main'
+    if: needs.build.result == 'success' && contains(github.ref_name, 'hotfix-') && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch

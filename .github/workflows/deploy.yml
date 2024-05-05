@@ -92,52 +92,25 @@ on:
 permissions:
   contents: write
 
-env:
-  development: github.ref == 'refs/heads/develop' && true
-  staging:
-  production:
+env:         # if - input.env is not production, use input's value, else - check the branch (main) to set the production env.
+  deploy_env: ${{ inputs.environment != 'production' && inputs.environment || github.ref_name == 'main' && 'production' || null }}
 
 jobs:
-  determine-environment:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Select environment
-        id: select-environment
-        run: |
-          if [ "${{ input.environment }}" == "development" ]; then
-            echo "main-dev (development)"
-            echo "selected-env=development" >> "$GITHUB_OUTPUT"
-            echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ inputs.environment }}" == "staging" ]; then
-            echo "staging"
-            echo "selected-env=staging" >> "$GITHUB_OUTPUT"
-            echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"     # TODO: read Develop-IT
-          elif [ ${{ inputs.environment }} == "production" ]; then
-            echo "production"
-            echo "selected-env=production" >> "$GITHUB_OUTPUT"
-            echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"     # TODO: read Prod-IT
-          else
-            echo "Squad Environment - ${{ inputs.environment }}"
-            echo "selected-env=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
-          fi
-    outputs:
-      selected-env: ${{ steps.select-environment.outputs.selected-env }}
-      commit-sha: ${{ steps.select-environment.outputs.commit-sha }}
-
   deploy:
-    needs: [determine-environment]
     runs-on: ubuntu-latest
     environment:
-      name: ${{ needs.determine-environment.outputs.selected-env }}
+      name: $deploy_env
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy development
         run: |
-          echo "Deploying on ${{ needs.determine-environment.outputs.selected-env }}"
-          echo "Deploying commit: ${{ needs.determine-environment.outputs.commit-sha }}"          # Using sha determined by above job
+          echo "Deploying on ${{ env.deploy_env }}"
+          echo "Deploying sha:   ${{ env.sha }}"
+        env:    # read IMAGE_TAG for stage & prod. commit-sha for others
+          sha: ${{ !contains(['staging', 'production'], inputs.environment) && github.sha || vars.IMAGE_TAG }}
 
-  set-dev-tag:      # only for develop & hotfix case
+  set-dev-tag:      # only after successfull deployment to main-dev
     needs: [deploy]
     if: needs.deploy.result == 'success' && github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
@@ -149,15 +122,47 @@ jobs:
           token: ${{ secrets.PUBLIC_REPO }}
           client-payload: '{"env": "development", "sha": "${{ github.sha }}"}'
 
-  e2e:                              # run e2e on successfull stage deployment
+  e2e:                              # run e2e once deployed to staging
     needs: [deploy, determine-environment]
     if: needs.determine-environment.outputs.selected-env == 'staging' && needs.deploy.result == 'success'
     uses: ./.github/workflows/e2e.yml
     secrets: inherit
-    with:
-      stage_deployment_success: true
 
-  release:
+  release:                          # once deployed to production
     needs: [deploy, determine-environment]
     if: needs.determine-environment.outputs.selected-env == 'production' && needs.deploy.result == 'success'
     uses: ./.github/workflows/release.yml
+
+
+
+
+
+
+
+ # determine-environment:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Select environment
+  #       id: select-environment
+  #       run: |
+  #         if [ "${{ input.environment }}" == "development" ]; then
+  #           echo "main-dev (development)"
+  #           echo "selected-env=development" >> "$GITHUB_OUTPUT"
+  #           echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+  #         elif [ "${{ inputs.environment }}" == "staging" ]; then
+  #           echo "staging"
+  #           echo "selected-env=staging" >> "$GITHUB_OUTPUT"
+  #           echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"     # TODO: read Develop-IT
+  #         elif [ ${{ inputs.environment }} == "production" && ${{ github.ref_name }} ==  "main" ]; then
+  #           echo "production"
+  #           echo "selected-env=production" >> "$GITHUB_OUTPUT"
+  #           echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"     # TODO: read Prod-IT
+  #         else
+  #           echo "Squad Environment - ${{ inputs.environment }}"
+  #           echo "selected-env=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
+  #         fi
+  #       env:
+  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
+  #   outputs:
+  #     selected-env: ${{ steps.select-environment.outputs.selected-env }}
+  #     commit-sha: ${{ steps.select-environment.outputs.commit-sha }}

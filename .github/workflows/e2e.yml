@@ -28,6 +28,7 @@
 name: e2e
 on:
   workflow_call:            # auto run only on deployment to stage
+  workflow_dispatch:
 
 jobs:
   e2e:
@@ -40,7 +41,7 @@ jobs:
 
   set-stage-tag:
     needs: [e2e]
-    if: needs.e2e.result == 'success'
+    if: needs.e2e.result == 'success' && github.ref_name == 'develop'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch

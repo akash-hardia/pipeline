@@ -68,7 +68,7 @@
 name: tag-seter
 on:
   repository_dispatch:
-    types: [set-prod-tag, set-stage-tag, set-dev-tag]
+    types: [set-dev-tag, set-stage-tag, set-prod-tag]
 
 permissions:
   contents: write
@@ -89,12 +89,13 @@ jobs:
   stage-image-tag:
     if: ${{ github.event.client_payload.env == 'staging' }}
     runs-on: ubuntu-latest
+    environment: development
     steps:
-      - uses: actions/checkout@v4             # TODO: copy dev tag in stage
+      - uses: actions/checkout@v4
       - name: gh
         run: |
           gh variable list
-          gh variable set IMAGE_TAG --body ${{ github.sha }} --env staging
+          gh variable set IMAGE_TAG --body ${{ vars.IMAGE_TAG }} --env staging
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
@@ -102,12 +103,13 @@ jobs:
   prod-image-tag:
     if: ${{ github.event.client_payload.env == 'production' }}
     runs-on: ubuntu-latest
+    environment: staging
     steps:
-      - uses: actions/checkout@v4             # TODO: copy stage tag in prod
+      - uses: actions/checkout@v4
       - name: gh
         run: |
           gh variable list
-          gh variable set IMAGE_TAG --body ${{ github.sha }} --env production
+          gh variable set IMAGE_TAG --body ${{ vars.IMAGE_TAG }} --env production
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
