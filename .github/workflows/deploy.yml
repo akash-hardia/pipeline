@@ -102,7 +102,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: $deploy_env
+      name: ${{ inputs.environment != 'production' && inputs.environment || github.ref_name == 'main' && 'production' || null }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
