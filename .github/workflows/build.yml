@@ -110,7 +110,7 @@ jobs:
 
   set-hotfix-tag:      # when PR is opened from hotfix-* against main
     needs: [build]
-    if: needs.build.result == 'success' && contains(github.ref_name, 'hotfix-') && github.base_ref == 'main'
+    if: needs.build.result == 'success' && contains(github.head_ref, 'hotfix-') && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
