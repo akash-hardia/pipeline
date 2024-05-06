@@ -68,7 +68,7 @@
 name: tag-seter
 on:
   repository_dispatch:
-    types: [set-dev-tag, set-stage-tag, set-prod-tag, set-hotifx-tag]
+    types: [set-dev-tag, set-stage-tag, set-prod-tag, set-hotfix-tag]
 
 permissions:
   contents: write
