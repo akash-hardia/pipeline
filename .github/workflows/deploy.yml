@@ -123,13 +123,13 @@ jobs:
           client-payload: '{"env": "development", "sha": "${{ github.sha }}"}'
 
   e2e:                              # run e2e once deployed to staging
-    needs: [deploy, determine-environment]
+    needs: [deploy]
     if: inputs.environment == 'staging' && needs.deploy.result == 'success'
     uses: ./.github/workflows/e2e.yml
     secrets: inherit
 
   release:                          # once deployed to production
-    needs: [deploy, determine-environment]
+    needs: [deploy]
     if: inputs.environment == 'production' && needs.deploy.result == 'success'
     uses: ./.github/workflows/release.yml
 
