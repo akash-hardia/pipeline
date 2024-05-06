@@ -115,7 +115,7 @@ jobs:
         with:
           token: ${{ secrets.PUBLIC_REPO }}
           event-type: set-hotfix-tag
-          client-payload: '{"env": "hotfix"}'
+          client-payload: '{"env": "hotfix", "sha": "${{ github.sha }}"}'
 
   set-prod-tag:      # when PR is opened from hotfix-* against main
     needs: [build]
