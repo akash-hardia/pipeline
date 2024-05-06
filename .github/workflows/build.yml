@@ -62,9 +62,6 @@ on:
   pull_request:     # when PR is opened against main
     branches:
       - 'main'
-    types:
-      - opened
-      - closed
   push:             # push to develop branch
     branches:
       - develop
