@@ -124,13 +124,13 @@ jobs:
 
   e2e:                              # run e2e once deployed to staging
     needs: [deploy, determine-environment]
-    if: needs.determine-environment.outputs.selected-env == 'staging' && needs.deploy.result == 'success'
+    if: env.deploy_env == 'staging' && needs.deploy.result == 'success'
     uses: ./.github/workflows/e2e.yml
     secrets: inherit
 
   release:                          # once deployed to production
     needs: [deploy, determine-environment]
-    if: needs.determine-environment.outputs.selected-env == 'production' && needs.deploy.result == 'success'
+    if: env.deploy_env == 'production' && needs.deploy.result == 'success'
     uses: ./.github/workflows/release.yml
 
 
