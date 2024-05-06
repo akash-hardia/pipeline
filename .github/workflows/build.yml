@@ -70,15 +70,15 @@ permissions:
   contents: write
 
 jobs:
-  # print-stuff:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: print
-  #       run: |
-  #         echo "Printing"
-  #         echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
-  #         echo "github.base_ref: ${{ github.base_ref }}"
-  #         echo "github.ref: ${{ github.ref }}"
+  print-stuff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print
+        run: |
+          echo "Printing"
+          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.ref: ${{ github.ref }}"
   build:
     permissions: write-all
     runs-on: ubuntu-latest
