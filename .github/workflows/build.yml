@@ -80,6 +80,9 @@ jobs:
           echo "github.base_ref: ${{ github.base_ref }}"
           echo "github.ref: ${{ github.ref }}"
           echo "github.head_ref: ${{ github.head_ref }}"
+          echo "github.event_name: ${{ github.event_name }}"
+          echo "github.event: ${{ github.event }}"
+          echo "contains(github.head_ref, 'hotfix-*'): ${{ contains(github.head_ref, 'hotfix-*') }}"
   build:
     permissions: write-all
     runs-on: ubuntu-latest
