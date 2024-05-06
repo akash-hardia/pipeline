@@ -115,7 +115,7 @@ jobs:
 
   set-dev-tag:      # only after successfull deployment to main-dev
     needs: [deploy]
-    if: needs.deploy.result == 'success' && github.ref == 'refs/heads/develop'
+    if: needs.deploy.result == 'success' && inputs.environment == 'development'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
