@@ -68,7 +68,7 @@
 name: tag-seter
 on:
   repository_dispatch:
-    types: [set-dev-tag, set-stage-tag, set-prod-tag]
+    types: [set-dev-tag, set-stage-tag, set-prod-tag, set-hotifx-tag]
 
 permissions:
   contents: write
@@ -100,7 +100,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
-  prod-image-tag:
+  hotfix-image-tag:
+    if: ${{ github.event.client_payload.env == 'hotfix' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: gh
+        run: |
+          gh variable list
+          gh variable set HOTFIX_IMAGE_TAG --body ${{ github.event.client_payload.sha }}
+          gh variable list
+        env:
+          GH_TOKEN: ${{ secrets.FULL_PAT }}
+
+  prod-image-tag:         # when develop is merged to main
     if: ${{ github.event.client_payload.env == 'production' }}
     runs-on: ubuntu-latest
     environment: staging
@@ -114,7 +127,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
 
-  deploy_staging:               # deploy to staging using dev tag
+  hotfix-to-prod-image-tag:               # when hotfix is merged to main
+    if: ${{ github.event.client_payload.env == 'hotfix-to-prod-tag' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: gh
+        run: |
+          gh variable list
+          gh variable set IMAGE_TAG --body ${{ vars.HOTFIX_IMAGE_TAG }} --env production
+          gh variable list
+        env:
+          GH_TOKEN: ${{ secrets.FULL_PAT }}
+
+  deploy_staging:                       # deploy to staging using dev tag
     needs: [dev-image-tag]
     if: needs.dev-image-tag.result == 'success'
     uses: ./.github/workflows/deploy.yml
