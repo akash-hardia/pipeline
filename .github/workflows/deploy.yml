@@ -95,23 +95,20 @@ on:
 permissions:
   contents: write
 
-env:         # if - input.env is not production, use input's value, else - check the branch (main) to set the production env.
-  deploy_env: ${{ inputs.environment != 'production' && inputs.environment || github.ref_name == 'main' && 'production' || null }}
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ inputs.environment != 'production' && inputs.environment || github.ref_name == 'main' && 'production' || null }}
+      name: ${{ inputs.environment }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Deploy development
         run: |
-          echo "Deploying on ${{ env.deploy_env }}"
+          echo "Deploying on ${{ inputs.environment }}"
           echo "Deploying sha:   ${{ env.sha }}"
         env:    # read IMAGE_TAG for stage & prod. commit-sha for others
-          sha: ${{ !contains(fromJSON('["staging", "production"]'), inputs.environment) && github.sha || vars.IMAGE_TAG }}
+          sha: ${{ inputs.environment != 'production' && github.sha || vars.IMAGE_TAG }}
 
   set-dev-tag:      # only after successfull deployment to main-dev
     needs: [deploy]
