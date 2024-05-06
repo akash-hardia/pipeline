@@ -62,6 +62,9 @@ on:
   pull_request:     # when PR is opened against main
     branches:
       - 'main'
+    types:
+      - opened
+      - closed
   push:             # push to develop branch
     branches:
       - develop
@@ -114,5 +117,17 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PUBLIC_REPO }}
-          event-type: set-prod-tag
-          client-payload: '{"env": "production", "sha": "${{ github.sha }}"}'
+          event-type: set-hotfix-tag
+          client-payload: '{"env": "hotfix"}'
+
+  set-prod-tag:      # when PR is opened from hotfix-* against main
+    needs: [build]
+    if: needs.build.result == 'success' && contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PUBLIC_REPO }}
+          event-type: set-production-tag
+          client-payload: '{"env": "hotfix-to-prod-tag"}'
