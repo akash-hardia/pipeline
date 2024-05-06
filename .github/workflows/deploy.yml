@@ -88,6 +88,9 @@ on:
           - production
           - isd-development
           - pi-development
+          - user-development
+          - discovery-development
+          - se-development
 
 permissions:
   contents: write
