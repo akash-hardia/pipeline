@@ -79,7 +79,7 @@ jobs:
           echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
           echo "github.base_ref: ${{ github.base_ref }}"
           echo "github.ref: ${{ github.ref }}"
-          echo "github.head_ref: ${{ github.ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
   build:
     permissions: write-all
     runs-on: ubuntu-latest
