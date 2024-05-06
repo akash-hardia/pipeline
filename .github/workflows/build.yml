@@ -89,7 +89,7 @@ jobs:
       - name: Build image
         run: |
           echo "Build the image"
-          echo "Successfully built the image!"
+          echo "Successfully built the image! with commit ${{ github.sha }}"
 
   deploy_development:
     needs: [build]
