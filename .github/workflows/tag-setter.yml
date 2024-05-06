@@ -123,7 +123,7 @@ jobs:
       environment: staging
 
   automerge-to-main:            # automerge develop to main, once stage-IT is set
-    needs: [stage-image-set]
-    if: needs.stage-image-set.result == 'success'
+    needs: [stage-image-tag]
+    if: needs.stage-image-tag.result == 'success'
     uses: ./.github/workflows/automerge.yml
     secrets: inherit
