@@ -108,7 +108,7 @@ jobs:
           echo "Deploying on ${{ env.deploy_env }}"
           echo "Deploying sha:   ${{ env.sha }}"
         env:    # read IMAGE_TAG for stage & prod. commit-sha for others
-          sha: ${{ !contains(['staging', 'production'], inputs.environment) && github.sha || vars.IMAGE_TAG }}
+          sha: ${{ !contains(fromJSON('["staging", "production"]'), inputs.environment) && github.sha || vars.IMAGE_TAG }}
 
   set-dev-tag:      # only after successfull deployment to main-dev
     needs: [deploy]
