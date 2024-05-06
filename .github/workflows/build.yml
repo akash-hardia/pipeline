@@ -129,5 +129,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.PUBLIC_REPO }}
-          event-type: set-production-tag
+          event-type: set-prod-tag
           client-payload: '{"env": "hotfix-to-prod-tag"}'
