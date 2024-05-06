@@ -103,7 +103,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Deploy development
+      - name: Deploy
         run: |
           echo "Deploying on ${{ inputs.environment }}"
           echo "Deploying sha:   ${{ env.sha }}"
