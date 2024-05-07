@@ -82,7 +82,7 @@ jobs:
           git checkout main
           git pull origin main
 
-          git merge develop -m "Automerge: Merge develop into main" --allow-unrelated-histories --verbose
+          git merge develop -m "Automerge: Merge develop into main" --allow-unrelated-histories -s recursive --verbose
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
