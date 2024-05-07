@@ -27,4 +27,6 @@ hotfixjwehgl
 
 
 
-hotfix-case
+hotfix-case\
+
+\conflict
