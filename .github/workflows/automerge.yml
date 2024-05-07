@@ -88,6 +88,8 @@ jobs:
           GH_TOKEN: secrets.GITHUB_TOKEN
 
   set-image-tag:      # once develop is merged in main, set PROD-IT
+    needs: [automerge]
+    if: needs.automerge.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
