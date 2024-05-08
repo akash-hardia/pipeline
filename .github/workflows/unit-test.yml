@@ -2,10 +2,9 @@ name: Unit Test Workflow
 
 on:
   pull_request:
-    types:
-      - opened
     branches:
       - 'develop'
+      - 'main'
 
 jobs:
   unit_tests:
