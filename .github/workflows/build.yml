@@ -123,7 +123,6 @@ jobs:
           client-payload: '{"env": "hotfix", "sha": "${{ github.sha }}"}'
 
   set-prod-tag:      # when hotfix pr is merged in main  (doesn't require build)
-    needs: [build]
     if: contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
