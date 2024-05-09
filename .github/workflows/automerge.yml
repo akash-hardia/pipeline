@@ -58,7 +58,7 @@ on:
 
 jobs:
   automerge:
-    runs-on: ubuntu-20.04
+    runs-on:
     permissions:
       contents: write
     steps:
@@ -73,7 +73,7 @@ jobs:
       - name: Merge develop branch into main                                          # This fails in case of conflicts, admin will merge manually
         run: |
           echo "Prining secret: ${{ secrets.PUBLIC_REPO }}"
-          git --version
+          git --versionubuntu-20.04
           git config --global user.email "you@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin

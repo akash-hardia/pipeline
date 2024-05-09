@@ -92,7 +92,7 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     # if it's not a pull_request, then run for any branch. Else, only run for hotfix-* when it's not merged
-    if: github.event_name != 'pull_request' && true || contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true || false
+    if: github.event_name != 'pull_request' && true || contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged != true || false
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -100,7 +100,7 @@ jobs:
       - name: Build image
         run: |
           echo "Build the image"
-          echo "Successfully built the image! with commit ${{ github.sha }}"
+          echo "Successfully built the image! with commit ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
 
   deploy_development:
     needs: [build]
@@ -123,7 +123,6 @@ jobs:
           client-payload: '{"env": "hotfix", "sha": "${{ github.sha }}"}'
 
   set-prod-tag:      # when hotfix pr is merged in main  (doesn't require build)
-    needs: [build]
     if: contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
