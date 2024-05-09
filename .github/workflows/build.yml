@@ -100,7 +100,7 @@ jobs:
       - name: Build image
         run: |
           echo "Build the image"
-          echo "Successfully built the image! with commit ${{ github.sha }}"
+          echo "Successfully built the image! with commit ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
 
   deploy_development:
     needs: [build]
