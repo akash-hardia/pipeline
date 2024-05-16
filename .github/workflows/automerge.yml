@@ -70,17 +70,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Merge develop branch into main                                          # This fails in case of conflicts, admin will merge manually
+      - name: check mergeability
         run: |
-          echo "Prining secret: ${{ secrets.PUBLIC_REPO }}"
           git --version
-          git config --global user.email "you@example.com"
+          git config --global user.email "automerger@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin
-          git checkout develop
-          git pull origin develop
           git checkout main
-          git pull origin main
+          git merge --no-commit --no-ff develop
+
+      - name: Merge develop branch into main                                          # This fails in case of conflicts, admin will merge manually
+        run: |
+          git --version
+          git checkout main
 
           git merge develop -m "Automerge: Merge develop into main" --allow-unrelated-histories --no-ff --verbose
           git push origin main
