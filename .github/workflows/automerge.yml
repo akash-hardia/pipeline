@@ -77,7 +77,8 @@ jobs:
           git config --global user.name "Auto Merger"
           git fetch origin
           git checkout main
-          git merge --no-commit --no-ff develop
+          git merge --no-commit --no-ff develop > merge.txt
+
 
       - name: Merge develop branch into main                                          # This fails in case of conflicts, admin will merge manually
         run: |
