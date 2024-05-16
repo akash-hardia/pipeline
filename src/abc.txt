@@ -6,16 +6,3 @@ abcd5
 abcd6
 
 hotifixing
-
-
-
-
-hotfixing  13
-
-'
-lgknew
-
-test biuld
-
-
-007
