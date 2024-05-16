@@ -67,6 +67,7 @@ jobs:
       - name: check mergeability
         id: check-mergeability
         run: |
+          set +e
           git --version
           git config --global user.email "automerger@example.com"
           git config --global user.name "Auto Merger"
