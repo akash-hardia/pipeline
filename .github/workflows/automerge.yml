@@ -72,7 +72,7 @@ jobs:
           git config --global user.email "automerger@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin
-          git checkout main
+          git checkout origin/main
           git merge --no-commit --no-ff --allow-unrelated-histories develop > merge.txt
 
           echo "mergeable=${{ true }}" >> "$GITHUB_OUTPUT"
