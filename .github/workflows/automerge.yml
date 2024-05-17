@@ -58,29 +58,39 @@ on:
 
 jobs:
   automerge:
-    runs-on:
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Set up Git
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          registry-url: 'https://registry.npmjs.org'
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Merge develop branch into main                                          # This fails in case of conflicts, admin will merge manually
+      - name: check mergeability
+        id: check-mergeability
         run: |
-          echo "Prining secret: ${{ secrets.PUBLIC_REPO }}"
-          git --versionubuntu-20.04
-          git config --global user.email "you@example.com"
+          set +e
+          git --version
+          git config --global user.email "automerger@example.com"
           git config --global user.name "Auto Merger"
           git fetch origin
-          git checkout develop
-          git pull origin develop
+          git checkout origin/main
+          git merge --no-commit --no-ff --allow-unrelated-histories develop > merge.txt
+
+          echo "mergeable=${{ true }}" >> "$GITHUB_OUTPUT"
+          if grep -q "Automatic merge failed" merge.txt; then
+              echo "Found conflicts.!"
+              echo "mergeable=${{ false }}" >> "$GITHUB_OUTPUT"
+              git merge --abort
+          elif grep -q "Already up to date" merge.txt; then
+              echo "Merge not required. Already upto date!"
+          else
+              echo "Mergeable!"
+          fi
+
+      - name: Merge develop branch into main   # This fails in case of conflicts, admin will merge manually
+        if: steps.check-mergeability.outputs.mergeable == true
+        run: |
+          git --version
           git checkout main
-          git pull origin main
 
           git merge develop -m "Automerge: Merge develop into main" --allow-unrelated-histories --no-ff --verbose
           git push origin main
