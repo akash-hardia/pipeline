@@ -79,13 +79,12 @@ jobs:
           if grep -q "Automatic merge failed" merge.txt; then
               echo "Found conflicts.!"
               echo "mergeable=${{ false }}" >> "$GITHUB_OUTPUT"
+              git merge --abort
           elif grep -q "Already up to date" merge.txt; then
               echo "Merge not required. Already upto date!"
           else
               echo "Mergeable!"
           fi
-
-          git merge --abort
 
       - name: Merge develop branch into main   # This fails in case of conflicts, admin will merge manually
         if: steps.check-mergeability.outputs.mergeable == true
