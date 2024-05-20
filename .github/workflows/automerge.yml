@@ -73,7 +73,7 @@ jobs:
           git config --global user.name "Auto Merger"
           git fetch origin
           git checkout origin/main
-          git merge --no-commit --no-ff --allow-unrelated-histories develop > merge.txt
+          git merge --no-commit --no-ff --allow-unrelated-histories origin/develop > merge.txt
           echo "printing merge result:"
           cat merge.txt
 
