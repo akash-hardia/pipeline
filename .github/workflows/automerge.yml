@@ -92,9 +92,9 @@ jobs:
         if: steps.check-mergeability.outputs.mergeable == true
         run: |
           git --version
-          git checkout main
+          git checkout origin/main
 
-          git merge develop -m "Automerge: Merge develop into main" --allow-unrelated-histories --no-ff --verbose
+          git merge origin/develop -m "Automerge: Merge develop into main" --allow-unrelated-histories --no-ff --verbose
           git push origin main
         env:
           GH_TOKEN: secrets.GITHUB_TOKEN
