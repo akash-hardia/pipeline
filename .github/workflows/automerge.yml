@@ -74,6 +74,8 @@ jobs:
           git fetch origin
           git checkout origin/main
           git merge --no-commit --no-ff --allow-unrelated-histories develop > merge.txt
+          echo "printing merge result:"
+          cat merge.txt
 
           echo "mergeable=${{ true }}" >> "$GITHUB_OUTPUT"
           if grep -q "Automatic merge failed" merge.txt; then
