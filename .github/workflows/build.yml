@@ -64,7 +64,6 @@ on:
       - 'main'
     types:
       - opened
-      - closed
       - reopened
       - synchronize
   push:             # push to develop branch
