@@ -59,7 +59,7 @@
 name: app-build
 on:
   workflow_dispatch:
-  pull_request:     # when PR is opened against main
+  pull_request:     # pr against main
     branches:
       - 'main'
     types:
@@ -122,13 +122,13 @@ jobs:
           event-type: set-hotfix-tag
           client-payload: '{"env": "hotfix", "sha": "${{ github.event.pull_request.head.sha }}"}'
 
-  set-prod-tag:      # when hotfix pr is merged in main  (doesn't require build)
-    if: contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.PUBLIC_REPO }}
-          event-type: set-prod-tag
-          client-payload: '{"env": "hotfix-to-prod-tag"}'
+  # set-prod-tag:      # when hotfix pr is merged in main  (doesn't require build)
+  #   if: contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Repository Dispatch
+  #       uses: peter-evans/repository-dispatch@v3
+  #       with:
+  #         token: ${{ secrets.PUBLIC_REPO }}
+  #         event-type: set-prod-tag
+  #         client-payload: '{"env": "hotfix-to-prod-tag"}'

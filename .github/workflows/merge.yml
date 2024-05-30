@@ -1,44 +1,31 @@
-name: Manual Merge
+name: Post merge to main
 
 on:
-  workflow_dispatch:
-    inputs:
-      to-branch:
-        description: 'Merge to?'
-        required: true
-        default: 'release'
-        type: choice
-        options:
-        - release
+  pull_request:
+    branches:
+      - 'main'
+    types:
+      - closed
 
 jobs:
-  merge:
-    permissions: write-all
+  set-prod-tag:     # In case develop is merged in main
+    if: contains(github.head_ref, 'develop') && github.event.pull_request.merged == true && github.base_ref == 'main'
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: secrets.FULL_PAT
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.PUBLIC_REPO }}
+          event-type: set-prod-tag
+          client-payload: '{"env": "production"}'
 
-      - name: Check if merge is needed
-        id: check-merge
-        run: |
-          git fetch origin
-          if [ "$(git rev-parse origin/${{ github.ref_name }})" != "$(git rev-parse origin/${{ inputs.to-branch }})" ]; then
-            echo "::set-output name=merge_needed::true"
-          else
-            echo "::set-output name=merge_needed::false"
-          fi
-
-      - name: Manually merge a branch
-        if: steps.check-merge.outputs.merge_needed == 'true'
-        id: perform-merge
-        run: |
-          git fetch origin ${{ inputs.to-branch }} ${{ github.ref_name }}
-          git checkout ${{ inputs.to-branch }}
-          echo "Merging ${{github.ref_name}} into ${{ inputs.to-branch }}"
-          git config --global user.email "you@example.com"
-          git config --global user.name "Automerger"
-          git merge ${{ github.ref_name }} --allow-unrelated-histories -m "Merging ${{ github.ref_name }} into ${{ inputs.to-branch }}" --allow-unrelated-histories -s ort -Xtheirs --verbose
-          git push origin ${{ inputs.to-branch }}
+  set-prod-tag:      # when hotfix pr is merged in main  (doesn't require build)
+  if: contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
+  runs-on: ubuntu-latest
+  steps:
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.PUBLIC_REPO }}
+        event-type: set-prod-tag
+        client-payload: '{"env": "hotfix-to-prod-tag"}'
