@@ -10,6 +10,19 @@ on:
       - synchronize
 
 jobs:
+  print-stuff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: print
+        run: |
+          echo "Printing"
+          echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+          echo "github.event_name: ${{ github.event_name }}"
+          echo "github.event: ${{ github.event }}"
+          echo "contains(github.head_ref, 'hotfix-'): ${{ contains(github.head_ref, 'hotfix-') }}"
   mergeability:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop'
