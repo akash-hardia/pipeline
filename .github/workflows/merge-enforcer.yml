@@ -23,6 +23,10 @@ jobs:
           echo "github.event_name: ${{ github.event_name }}"
           echo "github.event: ${{ github.event }}"
           echo "contains(github.head_ref, 'hotfix-'): ${{ contains(github.head_ref, 'hotfix-') }}"
+          echo "============"
+          github.event_name == 'pull_request'
+          !contains(github.head_ref, 'hotfix-')
+          github.head_ref != 'develop'
   mergeability:
     runs-on: ubuntu-latest
     steps:
