@@ -10,10 +10,29 @@ on:
       - synchronize
 
 jobs:
+  # print-stuff:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: print
+  #       run: |
+  #         echo "Printing"
+  #         echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
+  #         echo "github.base_ref: ${{ github.base_ref }}"
+  #         echo "github.ref: ${{ github.ref }}"
+  #         echo "github.head_ref: ${{ github.head_ref }}"
+  #         echo "github.event_name: ${{ github.event_name }}"
+  #         echo "github.event: ${{ github.event }}"
+  #         echo "contains(github.head_ref, 'hotfix-'): ${{ contains(github.head_ref, 'hotfix-') }}"
+  #         echo "============"
+  #         echo "github.event_name == 'pull_request': ${{github.event_name == 'pull_request'}}"
+  #         echo "contains(github.head_ref, 'hotfix-'): ${{contains(github.head_ref, 'hotfix-')}}"
+  #         echo "github.head_ref != 'develop': ${{github.head_ref != 'develop'}}"
+  #         echo "github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop': ${{github.event_name == 'pull_request' && !(contains(github.head_ref, 'hotfix-') || github.head_ref == 'develop')}}"
   mergeability:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop'
     steps:
-      - run: |
+      - name: check branch
+        if: github.event_name == 'pull_request' && !(contains(github.head_ref, 'hotfix-') || github.head_ref == 'develop')
+        run: |
           echo "ERROR: You can only merge to main from dev or hotfix."
           exit 1
