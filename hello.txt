@@ -40,4 +40,3 @@ testit
 cklmw
 test999
 test999
-chore-123
