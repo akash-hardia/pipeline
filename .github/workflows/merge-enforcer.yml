@@ -25,8 +25,9 @@ jobs:
           echo "contains(github.head_ref, 'hotfix-'): ${{ contains(github.head_ref, 'hotfix-') }}"
   mergeability:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop'
     steps:
-      - run: |
+      - name: check branch
+        if: github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop'
+        run: |
           echo "ERROR: You can only merge to main from dev or hotfix."
           exit 1
