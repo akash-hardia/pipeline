@@ -9,10 +9,11 @@ on:
       - reopened
       - synchronize
 
-mergeability:
-  runs-on: ubuntu-latest
-  if: github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop'
-  steps:
-    run: |
-      echo "ERROR: You can only merge to main from dev or hotfix."
-      exit 1
+jobs:
+  mergeability:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && !contains(github.head_ref, 'hotfix-') || github.head_ref != 'develop'
+    steps:
+      run: |
+        echo "ERROR: You can only merge to main from dev or hotfix."
+        exit 1
