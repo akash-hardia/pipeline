@@ -24,5 +24,6 @@ jobs:
         with:
           token: ${{ secrets.FULL_PAT }} # personal access token. Permissions contents: write, pull requests: write
           branch: prod-promotion
+          title: Merge Develop to Main
           labels: |
             automated pr
