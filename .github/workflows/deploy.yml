@@ -1,84 +1,11 @@
-# name: deploy
-# on:
-#   workflow_call:                # auto deploy to main-dev & staging
-#     inputs:
-#       environment:
-#         required: true
-#         type: string
-#   workflow_dispatch:            # manual deploy to production / squad envs
-#     inputs:
-#       environment:
-#         description: 'Environment to deploy to'
-#         required: true
-#         type: choice
-#         options:
-#           - production
-#           - isd-development
-#           - pi-development
-
-# permissions:
-#   contents: write
-
-# jobs:
-  # determine-environment:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Select environment
-  #       id: select-environment
-  #       run: |
-  #         if [ "${{ github.ref }}" == "refs/heads/develop" ]; then
-  #           echo "main-dev (development)"
-  #           echo "selected-env=development" >> "$GITHUB_OUTPUT"
-  #         elif [ "${{ github.ref }}" == "refs/heads/release" ]; then
-  #           echo "staging"
-  #           echo "selected-env=staging" >> "$GITHUB_OUTPUT"
-  #         elif [ "${{ github.ref }}" == "refs/heads/main" && ${{ inputs.environment }} == "production" ]; then
-  #           echo "production"
-  #           echo "selected-env=production" >> "$GITHUB_OUTPUT"
-  #         else
-  #           echo "Squad Environment - ${{ inputs.environment }}"
-  #           echo "selected-env=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
-  #         fi
-  #   outputs:
-  #     selected-env: ${{ steps.select-environment.outputs.selected-env }}
-
-  # deploy:
-  #   needs: [determine-environment]
-  #   runs-on: ubuntu-latest
-  #   environment:
-  #     name: ${{ needs.determine-environment.outputs.selected-env }}
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #     - name: Check for approvals
-  #       if: needs.determine-environment.outputs.selected-env == 'production' && github.actor == 'akashhardia'
-  #       run: exit 1
-  #     - name: Deploy development
-  #       run: |
-  #         echo "Deploying on ${{ needs.determine-environment.outputs.selected-env }}"
-  #         echo "Deploying commit: ${{ vars.IMAGE_TAG }}"
-
-  # e2e:                              # run e2e on successfull stage deployment
-  #   needs: [deploy, determine-environment]
-  #   if: needs.determine-environment.outputs.selected-env == 'staging' && needs.deploy.result == 'success'
-  #   uses: ./.github/workflows/e2e.yml
-  #   secrets: inherit
-  #   with:
-  #     stage_deployment_success: true
-
-  # release:
-  #   needs: [deploy, determine-environment]
-  #   if: needs.determine-environment.outputs.selected-env == 'production' && needs.deploy.result == 'success'
-  #   uses: ./.github/workflows/release.yml
-
 name: deploy
 on:
-  workflow_call:                # auto deploy to main-dev & staging
+  workflow_call:                # auto deploy to staging
     inputs:
       environment:
         required: true
         type: string
-  workflow_dispatch:            # manual deploy to production / squad envs
+  workflow_dispatch:            # manual deploy to production / dev envs
     inputs:
       environment:
         description: 'Environment to deploy to'
@@ -86,6 +13,7 @@ on:
         type: choice
         options:
           - production
+          - development
           - isd-development
           - pi-development
           - user-development
@@ -107,20 +35,8 @@ jobs:
         run: |
           echo "Deploying on ${{ inputs.environment }}"
           echo "Deploying sha:   ${{ env.sha }}"
-        env:    # read IMAGE_TAG for prod. commit-sha for others
+        env:    # read IMAGE_TAG for prod. read current commit-sha for others
           sha: ${{ inputs.environment != 'production' && github.sha || vars.IMAGE_TAG }}
-
-  set-dev-tag:      # only after successfull deployment to main-dev
-    needs: [deploy]
-    if: needs.deploy.result == 'success' && inputs.environment == 'development'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          event-type: set-dev-tag
-          token: ${{ secrets.PUBLIC_REPO }}
-          client-payload: '{"env": "development", "sha": "${{ github.sha }}"}'
 
   e2e:                              # run e2e once deployed to staging
     needs: [deploy]
@@ -132,36 +48,3 @@ jobs:
     needs: [deploy]
     if: inputs.environment == 'production' && needs.deploy.result == 'success'
     uses: ./.github/workflows/release.yml
-
-
-
-
-
-
- # determine-environment:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Select environment
-  #       id: select-environment
-  #       run: |
-  #         if [ "${{ input.environment }}" == "development" ]; then
-  #           echo "main-dev (development)"
-  #           echo "selected-env=development" >> "$GITHUB_OUTPUT"
-  #           echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
-  #         elif [ "${{ inputs.environment }}" == "staging" ]; then
-  #           echo "staging"
-  #           echo "selected-env=staging" >> "$GITHUB_OUTPUT"
-  #           echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"     # TODO: read Develop-IT
-  #         elif [ ${{ inputs.environment }} == "production" && ${{ github.ref_name }} ==  "main" ]; then
-  #           echo "production"
-  #           echo "selected-env=production" >> "$GITHUB_OUTPUT"
-  #           echo "commit-sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"     # TODO: read Prod-IT
-  #         else
-  #           echo "Squad Environment - ${{ inputs.environment }}"
-  #           echo "selected-env=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
-  #         fi
-  #       env:
-  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
-  #   outputs:
-  #     selected-env: ${{ steps.select-environment.outputs.selected-env }}
-  #     commit-sha: ${{ steps.select-environment.outputs.commit-sha }}

@@ -1,0 +1,22 @@
+name: 'Create Pull request'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 8 * * 1,2,3,4,5" # UTC timezone which is 8am; 4pm in Singapore
+
+jobs:
+  create-pr:
+    steps:
+      - name: create pull request to main branch
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.FULL_PAT }} # personal access token. Permissions contents: write, pull requests: write
+          commit-message:
+          author: Akash Hardia (PR) <aakashhardiya@gmail.com>
+          branch: develop
+          base: main
+          title: 'Merge Develop to Main'
+          labels: |
+            automated pr
