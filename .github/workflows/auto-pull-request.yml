@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: main
       - name: create pull request to main branch
         id: cpr
         uses: peter-evans/create-pull-request@v6
@@ -19,7 +17,7 @@ jobs:
           token: ${{ secrets.FULL_PAT }} # personal access token. Permissions contents: write, pull requests: write
           commit-message: 'Merge develop to main [AUTO PR]'
           author: Akash Hardia (PR) <aakashhardiya@gmail.com>
-          branch: develop
+          branch: develop-auto-pr
           base: main
           title: 'Merge Develop to Main'
           labels: |
