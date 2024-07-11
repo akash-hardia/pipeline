@@ -1,7 +1,9 @@
-name: 'Create Pull request'
+name: 'Create Pull request to Main'
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - develop
   schedule:
     - cron: "0 8 * * 1,2,3,4,5" # UTC timezone which is 8am; 4pm in Singapore
 
@@ -9,18 +11,18 @@ jobs:
   create-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: main
+      - name: Reset promotion branch
+        run: |
+          git fetch origin develop:develop
+          git reset --hard develop
       - name: create pull request to main branch
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.FULL_PAT }} # personal access token. Permissions contents: write, pull requests: write
-          commit-message: 'Merge develop to main [AUTO PR]'
-          author: Akash Hardia (PR) <aakashhardiya@gmail.com>
           branch: prod-promotion
-          base: main
-          title: 'Merge Develop to Main'
           labels: |
             automated pr
