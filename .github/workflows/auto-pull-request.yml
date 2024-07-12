@@ -1,11 +1,12 @@
 name: 'Create Pull request to Main'
 
 on:
-  push:
-    branches:
-      - develop
-  schedule:
-    - cron: "0 8 * * 1,2,3,4,5" # UTC timezone which is 8am; 4pm in Singapore
+  workflow_call:
+  # push:
+  #   branches:
+  #     - develop
+  # schedule:
+  #   - cron: "0 8 * * 1,2,3,4,5" # UTC timezone which is 8am; 4pm in Singapore
 
 jobs:
   create-pr:
