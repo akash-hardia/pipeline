@@ -1,29 +1,3 @@
-# name: e2e
-# on:
-#   workflow_dispatch:        # run manually for development env (optional)
-#   workflow_call:            # auto run on deployment to stage
-#     inputs:
-#       stage_deployment_success:
-#         required: true
-#         type: boolean
-#         default: false
-
-# jobs:
-#   e2e:
-#     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/release'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-#       - name: Run e2e
-#         run: echo "Running e2e"
-
-#   automerge-to-main:
-#     needs: [e2e]
-#     if: inputs.stage_deployment_success == true && needs.e2e.result == 'success'
-#     uses: ./.github/workflows/automerge.yml
-#     secrets: inherit
-
 
 name: e2e
 on:

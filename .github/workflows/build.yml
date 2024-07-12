@@ -1,72 +1,14 @@
-# name: app-build
-# on:
-#   workflow_dispatch:
-#   pull_request:     # when hotfix PR is merged in main
-#     branches:
-#       - 'main'
-#     types:
-#       - closed
-#   push:             # push to develop branch
-#     branches:
-#       - develop
-
-# jobs:
-#   print-stuff:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: print
-#         run: |
-#           echo "Printing"
-#           echo "github.event.pull_request.merged: ${{ github.event.pull_request.merged }}"
-#           echo "github.base_ref: ${{ github.base_ref }}"
-#           echo "github.ref: ${{ github.ref }}"
-#   build:
-#     permissions: write-all
-#     runs-on: ubuntu-latest
-#     if: github.ref == 'refs/heads/develop' || github.event.pull_request.merged == true && github.base_ref == 'main' || contains(github.ref, 'fix-') || contains(github.ref, 'feat-')
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
-
-#       - name: Build image
-#         run: |
-#           echo "Build the image"
-
-#   set-dev-tag:      # only for develop & hotfix case
-#     needs: [build]
-#     if: needs.build.result == 'success' && github.ref == 'refs/heads/develop'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Repository Dispatch
-#         uses: peter-evans/repository-dispatch@v3
-#         with:
-#           event-type: set-dev-tag
-#           token: ${{ secrets.PUBLIC_REPO }}
-#           client-payload: '{"ref": "refs/heads/develop", "sha": "${{ github.sha }}"}'
-
-#   set-hotfix-tag:      # only for develop & hotfix case
-#     needs: [build]
-#     if: needs.build.result == 'success' && github.event.pull_request.merged == true && github.base_ref == 'main'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Repository Dispatch
-#         uses: peter-evans/repository-dispatch@v3
-#         with:
-#           token: ${{ secrets.PUBLIC_REPO }}
-#           event-type: set-prod-tag
-#           client-payload: '{"ref": "refs/heads/main", "sha": "${{ github.sha }}"}'
-
 name: app-build
 on:
-  workflow_dispatch:
-  pull_request:     # pr against main
+  workflow_dispatch:              # for all dev envs
+  pull_request:     # pr against main (for production)
     branches:
       - 'main'
     types:
       - opened
       - reopened
       - synchronize
-  push:             # push to develop branch
+  push:             # push to develop branch (for staging)
     branches:
       - develop
 
@@ -101,13 +43,13 @@ jobs:
           echo "Build the image"
           echo "Successfully built the image! with commit ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
 
-  deploy_development:
+  deploy_staging:       # Once built on develop branch, deploy to staging
     needs: [build]
     if: needs.build.result == 'success' && github.ref == 'refs/heads/develop'
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     with:
-      environment: development
+      environment: staging
 
   set-hotfix-tag:      # when PR is opened from hotfix-* against main & not merged yet.
     needs: [build]
@@ -120,14 +62,3 @@ jobs:
           token: ${{ secrets.PUBLIC_REPO }}
           event-type: set-hotfix-tag
           client-payload: '{"env": "hotfix", "sha": "${{ github.event.pull_request.head.sha }}"}'
-
-  # set-prod-tag:      # when hotfix pr is merged in main  (doesn't require build)
-  #   if: contains(github.head_ref, 'hotfix-') && github.event.pull_request.merged == true && github.base_ref == 'main'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Repository Dispatch
-  #       uses: peter-evans/repository-dispatch@v3
-  #       with:
-  #         token: ${{ secrets.PUBLIC_REPO }}
-  #         event-type: set-prod-tag
-  #         client-payload: '{"env": "hotfix-to-prod-tag"}'

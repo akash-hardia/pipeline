@@ -1,70 +1,3 @@
-# name: tag-seter
-# on:
-#   push:               # runs when pushed to release
-#     branches:
-#       - release
-#   repository_dispatch:        # auto-merge case - main & develop
-#     types: [set-prod-tag, set-dev-tag]
-
-# permissions:
-#   contents: write
-
-# jobs:
-  # dev-image-tag:
-  #   if: ${{ github.event.client_payload.ref == 'refs/heads/develop' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: gh
-  #       run: |
-  #         gh variable list
-  #         gh variable set IMAGE_TAG --body ${{ github.sha }} --env development
-  #         gh variable list
-  #       env:
-  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
-
-  # stage-image-tag:
-  #   if: github.event.ref == 'refs/heads/release'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: gh
-  #       run: |
-  #         gh variable list
-  #         gh variable set IMAGE_TAG --body ${{ github.sha }} --env staging
-  #         gh variable list
-  #       env:
-  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
-
-  # production-image-tag:
-  #   if: ${{ github.event.client_payload.ref == 'refs/heads/main' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: gh
-  #       run: |
-  #         gh variable list
-  #         gh variable set IMAGE_TAG --body ${{ github.sha }} --env production
-  #         gh variable list
-  #       env:
-  #         GH_TOKEN: ${{ secrets.FULL_PAT }}
-
-  # deploy_development:
-  #   needs: [dev-image-tag]
-  #   if: needs.dev-image-tag.result == 'success'
-  #   uses: ./.github/workflows/deploy.yml
-  #   secrets: inherit
-  #   with:
-  #     environment: development
-
-  # deploy_staging:               # once the tag is set, auto deploy using set tag.
-  #   needs: [stage-image-tag]
-  #   if: needs.stage-image-tag.result == 'success'
-  #   uses: ./.github/workflows/deploy.yml
-  #   secrets: inherit
-  #   with:
-  #     environment: staging
-
 name: tag-seter
 on:
   repository_dispatch:
@@ -74,28 +7,15 @@ permissions:
   contents: write
 
 jobs:
-  dev-image-tag:
-    if: ${{ github.event.client_payload.env == 'development' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: gh
-        run: |
-          gh variable list
-          gh variable set IMAGE_TAG --body ${{ github.sha }} --env development
-          gh variable list
-        env:
-          GH_TOKEN: ${{ secrets.FULL_PAT }}
   stage-image-tag:
     if: ${{ github.event.client_payload.env == 'staging' }}
     runs-on: ubuntu-latest
-    environment: development
     steps:
       - uses: actions/checkout@v4
       - name: gh
         run: |
           gh variable list
-          gh variable set IMAGE_TAG --body ${{ vars.IMAGE_TAG }} --env staging
+          gh variable set IMAGE_TAG --body ${{ github.event.client_payload.sha }} --env staging
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
@@ -116,7 +36,7 @@ jobs:
   prod-image-tag:         # when develop is merged to main
     if: ${{ github.event.client_payload.env == 'production' }}
     runs-on: ubuntu-latest
-    environment: staging
+    environment: staging                      # read staging TAG
     steps:
       - uses: actions/checkout@v4
       - name: gh
@@ -139,17 +59,3 @@ jobs:
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
-
-  deploy_staging:                       # deploy to staging using dev tag
-    needs: [dev-image-tag]
-    if: needs.dev-image-tag.result == 'success'
-    uses: ./.github/workflows/deploy.yml
-    secrets: inherit
-    with:
-      environment: staging
-
-  # automerge-to-main:            # automerge develop to main, once stage-IT is set
-  #   needs: [stage-image-tag]
-  #   if: needs.stage-image-tag.result == 'success'
-  #   uses: ./.github/workflows/automerge.yml
-  #   secrets: inherit
