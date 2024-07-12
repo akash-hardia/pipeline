@@ -59,3 +59,9 @@ jobs:
           gh variable list
         env:
           GH_TOKEN: ${{ secrets.FULL_PAT }}
+
+  auto-create-pr:       # once e2e have passed, Auto create a PR to main from developa
+    needs: [stage-image-tag]
+    if: needs.stage-image-tag.result == 'success'
+    uses: ./.github/workflows/auto-pull-request.yml
+    secrets: inherit
