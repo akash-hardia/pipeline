@@ -9,7 +9,7 @@ on:
 
 jobs:
   set-prod-tag:     # In case develop is merged in main
-    if: contains(github.head_ref, 'develop') && github.event.pull_request.merged == true && github.base_ref == 'main'
+    if: contains(github.head_ref, 'prod-promotion') && github.event.pull_request.merged == true && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
